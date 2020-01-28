@@ -1,0 +1,29 @@
+Problem Description:
+	The following problem was obtained from https://leetcode.com/ 
+	One must return the indices of the two numbers that add up to the target value 
+	in an array of integers. 
+
+Algorithm:
+	In order to solve this problem, a hashmap is used to store the numbers being
+	processed as the keys in the hashmap and their corresponding index in the 
+	array as the values in the hashmap. Knowing that we must find:
+		nums[x] + nums[y] = target   OR    nums[y] = target - nums[x]
+	If one lets nums[y] correspond to the keys in the hashmap and nums[x] the
+	numbers that have yet to be processed, then we keep checking each nums[x]
+	until we find one such that:
+		target - nums[x] = nums[y]
+	Since nums[y] is in the hashmap, then it follows that it also in the array
+	of integers and thus nums[x] and nums[y] form a pair that add up to target
+	(if nums[x] did not result in a solution then we simply add it to the 
+	 hashmap).
+	
+Time Complexity:
+	Let n be the number of items in the array nums.
+	In the worst case, we traverse through the entire array before finding
+	a solution. Doing so takes O(n). Checking to see if an item is in the 
+	hashmap and adding items into the hashmap within the for loop takes O(1) on 
+	average. Thus, the time complexity of this algorithm is O(n).
+	
+	
+	
+	

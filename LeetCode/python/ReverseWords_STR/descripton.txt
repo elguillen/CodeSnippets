@@ -1,0 +1,22 @@
+Problem Description:
+	The following problem was obtained from https://leetcode.com/
+	Reverse the string word by word. A word being a sequence
+	of non-space characters.
+
+Algorithm:
+	Noticing that each word should be seperated by at most a single space,
+	the string is parsed such that it only contains single spaces between words
+    (no leading/trailing spaces and no multiple spaces between words). Then the
+	indices of all the remaining spaces are found. An empty string is created 
+	to recreate the string. Starting from the index of the last space of the
+	parsed string, the word that is between the current space and the last
+	space is added to the end of the result string (if no last space then until
+	the end of the parsed string). The remaining word 
+	(the word past the first space) is added to the result string.
+	
+Time Complexity:
+	Let n be the number of characters in the original string. Parsing the
+	string takes O(n). Finding all spaces is done in one pass and thus is
+	also O(n). Reversing the string depends on the number of spaces. There are
+	n - 1 spaces for each parsed string and thus reversing the string word by
+	word also takes O(n). Thus, the running time for this algorithm is O(n).
