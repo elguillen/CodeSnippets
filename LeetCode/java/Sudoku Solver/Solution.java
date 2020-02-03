@@ -1,7 +1,108 @@
 class Solution {
     
     public void solveSudoku(char[][] board) {
-        boolean result = partialSudokuSolver(board);
+        //boolean result = partialSudokuSolver(board);
+        final int NUM_ROWS = board.length;
+        final int NUM_COLS = board[0].length;
+        final int RADIX_DECIMAL = 10;
+        
+        if (NUM_ROWS != NUM_COLS)
+            return;
+        
+        Character[] digitsArr = IntStream.rangeClosed(1, NUM_ROWS)
+                                .mapToObj(x -> Character.forDigit(x, RADIX_DECIMAL))
+                                .toArray(Character[]::new);
+        
+        List<Character> digitsList = Arrays.asList(digitsArr);        
+        Set<Character> digitsSet = new HashSet<Character>(digitsList);
+        
+        if (partialSudokuSolver(board))
+            return;
+        
+        solveSudoku(digitsSet, board, NUM_ROWS);
+    }
+    
+    public boolean isEmptyCell(char[][] board, int row, int column,
+                                    Set<Character> digits) {  
+        // cell considered empty if it is filled with a character
+        // that does not correspond to one of the possible digits
+        return !digits.contains(board[row][column]);      
+    }
+    
+    public boolean passRowConstraint(char[][] board, int N, int row, int num) {
+        
+        for (int col = 0; col < N; col++)
+            if (board[row][col] == Character.forDigit(num, 10))
+                return false;
+        
+        return true;
+    }
+    
+    public boolean passColConstraint(char[][]board, int N, int col, int num) {
+        
+        for (int row = 0; row < N; row++) 
+            if (board[row][col] == Character.forDigit(num, 10))
+                return false;
+        
+        return true;
+    }
+    
+    public boolean passBoxConstraint(char[][]board, int N, int row, int col, int num) {
+        
+        int boxLength = (int) Math.sqrt((double) N);
+        int rowStart = row - (row % boxLength);
+        int rowEnd = rowStart + boxLength;
+        int colStart = col - (col % boxLength);
+        int colEnd = colStart + boxLength;
+        
+        for (int r = rowStart; r < rowEnd; r++)
+            for (int c = colStart; c < colEnd; c++) 
+                if (board[r][c] == Character.forDigit(num, 10))
+                    return false;
+        
+        return true;
+    }
+    
+    public boolean passConstraints(char[][] board, int N, int row, int col, int num) {
+        
+        return passRowConstraint(board, N, row, num) &&
+                passColConstraint(board, N, col, num) &&
+                passBoxConstraint(board, N, row, col, num);
+    }
+    
+    public boolean solveSudoku(Set<Character> digits, char[][] board, int N) {
+        
+        int row = -1;
+        int col = -1;
+        
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
+                if (isEmptyCell(board, r, c, digits)) {
+                    row = r;
+                    col = c;
+                }
+            }
+        }
+        
+        // all cell values have been filled so sudoku
+        // has been solved
+        if (row == -1 || col == -1)
+            return true;
+        
+        for (int num = 1; num <= N; num++) {
+            
+            if (passConstraints(board, N, row, col, num)) {
+                
+                board[row][col] = Character.forDigit(num, 10);
+                
+                if (solveSudoku(digits, board, N))
+                    return true;
+                else
+                    board[row][col] = '.';
+            }
+        }
+        
+        return false;
     }
     
     public boolean partialSudokuSolver(char[][] board) {      
@@ -40,9 +141,7 @@ class Solution {
             for (int row = 0; row < NUM_ROWS; row++) {
                 for (int col = 0; col < NUM_COLS; col++) {
                     
-                    // cell considered empty if it is filled with a character
-                    // that does not correspond to one of the possible digits
-                    boolean emptyCell = !digitsSet.contains(board[row][col]);
+                    boolean emptyCell = isEmptyCell(board, row, col, digitsSet);
                     
                     if (emptyCell) {
                         
@@ -115,6 +214,11 @@ class Solution {
             }
         } while (cellFilled);
         
+        for (int row = 0; row < NUM_ROWS; row++) 
+            for (int col = 0; col < NUM_COLS; col++)
+                if (board[row][col] == '.')
+                    return false;
+            
         return true;
     }
 
